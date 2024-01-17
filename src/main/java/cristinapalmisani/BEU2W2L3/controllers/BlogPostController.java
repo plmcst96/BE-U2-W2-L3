@@ -50,7 +50,7 @@ public class BlogPostController {
     }
 
     @GetMapping("author/{id}")
-    public Page<BlogPost> getBlogPostsByAuthorId(@PathVariable int id,
+    public Page<BlogPost> getBlogPostsByAuthorId(@PathVariable UUID id,
                                                  @RequestParam(defaultValue = "0") int page,
                                                  @RequestParam(defaultValue = "10") int size,
                                                  @RequestParam(defaultValue = "id") String sort) {

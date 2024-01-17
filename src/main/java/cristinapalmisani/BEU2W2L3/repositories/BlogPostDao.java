@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface BlogPostDao extends JpaRepository<BlogPost, UUID> {
-    Page<BlogPost> getBlogPostsByAuthorId(int id, Pageable pageable);
+    Page<BlogPost> getBlogPostsByAuthorId(UUID id, Pageable pageable);
 }

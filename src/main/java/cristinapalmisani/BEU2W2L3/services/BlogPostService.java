@@ -52,7 +52,7 @@ public class BlogPostService {
         return blogPostDao.save(found);
     }
 
-    public Page<BlogPost> getBlogPostsByAuthorId(int id, int page, int size, String orderBy) {
+    public Page<BlogPost> getBlogPostsByAuthorId(UUID id, int page, int size, String orderBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(orderBy));
         return blogPostDao.getBlogPostsByAuthorId(id, pageable);
     }
