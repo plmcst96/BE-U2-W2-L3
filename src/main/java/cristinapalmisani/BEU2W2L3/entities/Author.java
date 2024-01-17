@@ -1,16 +1,12 @@
 package cristinapalmisani.BEU2W2L3.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,6 +14,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Author {
     @Id
     @GeneratedValue
@@ -26,8 +24,12 @@ public class Author {
     private String name;
     private String surname;
     private String email;
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
     private String avatar;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    @ToString.Exclude
+    private List<BlogPost> blogPosts;
 
 
 }

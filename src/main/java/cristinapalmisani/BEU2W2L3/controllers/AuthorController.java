@@ -3,6 +3,8 @@ package cristinapalmisani.BEU2W2L3.controllers;
 import cristinapalmisani.BEU2W2L3.entities.Author;
 import cristinapalmisani.BEU2W2L3.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +18,10 @@ public class AuthorController {
 
     // GET lista autori
     @GetMapping
-    public List<Author> getAuthor(){
-        return authorService.getAuthor();
+    public Page<Author> getAuthor(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "5") int size,
+                                  @RequestParam(defaultValue = "id") String orderBy){
+        return authorService.getAuthor(page, size, orderBy);
     }
 
     // GET singolo autore
@@ -28,6 +32,7 @@ public class AuthorController {
 
     // POST nuovo autore
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Author saveBlog(@RequestBody Author body) {
         return authorService.save(body);
     }
@@ -40,6 +45,7 @@ public class AuthorController {
     //DELETE elimina autore
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findByIdAndDelete(@PathVariable UUID id){
         this.authorService.findByIdAndDelete(id);
     }

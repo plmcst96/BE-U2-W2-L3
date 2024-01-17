@@ -2,63 +2,47 @@ package cristinapalmisani.BEU2W2L3.services;
 
 import cristinapalmisani.BEU2W2L3.entities.Author;
 import cristinapalmisani.BEU2W2L3.exception.NotFoundException;
+import cristinapalmisani.BEU2W2L3.repositories.AuthorDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class AuthorService {
-    private List<Author> authors = new ArrayList<>();
+    @Autowired
+    private AuthorDao authorDao;
 
-    public List<Author> getAuthor() {
-        return this.authors;
+    public Page<Author> getAuthor(int page, int size, String orderBy) {
+        if (size >= 100) size = 100;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orderBy));
+        return authorDao.findAll(pageable);
     }
 
     public Author save(Author body) {
-
-        this.authors.add(body);
-        return body;
+        body.setAvatar("https://ui-avatars.com/api/?name=" + body.getName() + "+" + body.getSurname());
+        return authorDao.save(body);
     }
 
     public Author findById(UUID id) {
-        Author found = null;
-        for (Author user : this.authors) {
-            if (user.getId() == id) {
-                found = user;
-            }
-        }
-        if (found == null)
-            throw new NotFoundException(id);
-        return found;
+        return authorDao.findById(id).orElseThrow(()-> new NotFoundException(id));
     }
 
     public void findByIdAndDelete(UUID id) {
-        Iterator<Author> iterator = this.authors.iterator();
-        while (iterator.hasNext()) {
-            Author current = iterator.next();
-            if (current.getId() == id) {
-                iterator.remove();
-            }
-        }
+        Author found = this.findById(id);
+        authorDao.delete(found);
     }
-
     public Author findByIdAndUpdate(UUID id, Author body) {
-        Author found = null;
-        for (Author author : this.authors) {
-            if (author.getId() == id) {
-                found = author;
-                found.setName(body.getName());
-                found.setSurname(body.getSurname());
-                found.setBirthDate(body.getBirthDate());
-                found.setEmail(body.getEmail());
-                found.setAvatar(body.getAvatar());
-            }
-        }
-        if (found == null)
-            throw new NotFoundException(id);
-        return found;
+        Author found = this.findById(id);
+        found.setName(body.getName());
+        found.setSurname(body.getSurname());
+        found.setBirthDate(body.getBirthDate());
+        found.setEmail(body.getEmail());
+        return authorDao.save(found);
     }
 }

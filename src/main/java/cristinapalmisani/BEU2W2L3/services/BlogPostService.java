@@ -1,60 +1,59 @@
 package cristinapalmisani.BEU2W2L3.services;
 
+import cristinapalmisani.BEU2W2L3.entities.Author;
 import cristinapalmisani.BEU2W2L3.entities.BlogPost;
 import cristinapalmisani.BEU2W2L3.exception.NotFoundException;
+import cristinapalmisani.BEU2W2L3.repositories.AuthorDao;
+import cristinapalmisani.BEU2W2L3.repositories.BlogPostDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class BlogPostService {
-    private List<BlogPost> blogs = new ArrayList<>();
+    @Autowired
+    private BlogPostDao blogPostDao;
+    @Autowired
+    private AuthorService authorService;
 
-    public List<BlogPost> getBlog() {
-        return this.blogs;
+    public Page<BlogPost> getBlog(int page, int size, String orderBy) {
+        if (size >= 100) size = 100;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orderBy));
+        return blogPostDao.findAll(pageable);
     }
 
     public BlogPost save(BlogPost body) {
-        this.blogs.add(body);
-        return body;
+        Author author = authorService.findById(body.getAuthor().getId());
+        if (author != null) body.setAuthor(author);
+        body.setCover("https://picsum.photos/200/300");
+        return blogPostDao.save(body);
     }
 
     public BlogPost findById(UUID id) {
-        BlogPost found = null;
-        for (BlogPost user : this.blogs) {
-            if (user.getId() == id) {
-                found = user;
-            }
-        }
-        if (found == null)
-            throw new NotFoundException(id);
-        return found;
+        return blogPostDao.findById(id).orElseThrow(()-> new NotFoundException(id));
     }
 
     public void findByIdAndDelete(UUID id) {
-       Iterator<BlogPost> iterator = this.blogs.iterator();
-        while (iterator.hasNext()) {
-            BlogPost current = iterator.next();
-            if (current.getId() == id) {
-                iterator.remove();
-            }
-    }
+        BlogPost found = this.findById(id);
+        blogPostDao.delete(found);
 }
 
-public BlogPost findByIdAndUpdate(UUID id, BlogPost body) {
-    BlogPost found = null;
-    for (BlogPost blog : blogs) {
-        if (blog.getId() == id) {
-            found = blog;
-            found.setReadingTime(body.getReadingTime());
-            found.setCategory(body.getCategory());
-            found.setContent(body.getContent());
-            found.setCover(body.getCover());
-            found.setTitle(body.getTitle());
-        }
+    public BlogPost findByIdAndUpdate(UUID id, BlogPost body) {
+        BlogPost found = this.findById(id);
+        found.setTitle(body.getTitle());
+        found.setCategory(body.getCategory());
+        found.setContent(body.getContent());
+        found.setReadingTime(body.getReadingTime());
+        return blogPostDao.save(found);
     }
-    if (found == null)
-        throw new NotFoundException(id);
-    return found;
-}
+
+    public Page<BlogPost> getBlogPostsByAuthorId(int id, int page, int size, String orderBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orderBy));
+        return blogPostDao.getBlogPostsByAuthorId(id, pageable);
+    }
 }
