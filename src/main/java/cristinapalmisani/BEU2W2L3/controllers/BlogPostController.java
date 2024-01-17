@@ -1,6 +1,7 @@
 package cristinapalmisani.BEU2W2L3.controllers;
 
 import cristinapalmisani.BEU2W2L3.entities.BlogPost;
+import cristinapalmisani.BEU2W2L3.payloads.BlogPostPayload;
 import cristinapalmisani.BEU2W2L3.services.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,9 +32,9 @@ public class BlogPostController {
     }
 
     // POST nuovo blog
-    @PostMapping
+    @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public BlogPost saveBlog(@RequestBody BlogPost body) {
+    public BlogPost saveBlog(@RequestBody BlogPostPayload body) {
         return blogPostService.save(body);
     }
 

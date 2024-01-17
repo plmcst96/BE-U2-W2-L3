@@ -11,7 +11,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
 public class BlogPost {
     @Id
@@ -23,8 +22,17 @@ public class BlogPost {
     private String cover;
     private String content;
     private double readingTime;
+    @Setter
     @ManyToOne
     @JoinColumn(name = "author_id")
     @ToString.Exclude
     private Author author;
+
+    public BlogPost(String category, String title, String cover, String content, double readingTime) {
+        this.category = category;
+        this.title = title;
+        this.cover = cover;
+        this.content = content;
+        this.readingTime = readingTime;
+    }
 }

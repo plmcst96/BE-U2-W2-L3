@@ -1,11 +1,13 @@
 package cristinapalmisani.BEU2W2L3.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +31,8 @@ public class Author {
     private String avatar;
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
     @ToString.Exclude
-    private List<BlogPost> blogPosts;
+    @JsonIgnore
+    private List<BlogPost> blogPosts = new ArrayList<>();
 
 
 }
